@@ -1,7 +1,9 @@
 import sys
-from PIL import Image
+import argparse
 
+from PIL import Image
 from projection import *
+
 
 def get_sample(xy, face_size, face, img_equi):
 	direction = direction_from_face_xy(xy, face_size, face)
@@ -39,14 +41,14 @@ def equi_to_cube(equi_img_path, faces_img_path, face_size, samples):
 	render_faces(equi_img, faces_img, face_size, samples)
 	faces_img.save(faces_img_path)
 
-if len(sys.argv) != 5:
-	print(f'Usage: {sys.argv[0]} <src_image> <dest_image> <face_height> <samples>')
-	sys.exit(1)
 
-equi_to_cube(
-	sys.argv[1],
-	sys.argv[2],
-	(int(sys.argv[3]), int(sys.argv[3])),
-	int(sys.argv[4])
-)
+parser = argparse.ArgumentParser()
+parser.add_argument('image', type=str, help='Input image file (equirectangular image)')
+parser.add_argument('--out', type=str, default='cube.jpg', help='Output file')
+parser.add_argument('--face-size', type=int, default=512, help='Size of output cube faces, in pixels')
+parser.add_argument('--samples', type=int, default=1, help='Use NxN samples per output pixel')
+
+args = parser.parse_args()
+
+equi_to_cube(args.image, args.out, (args.face_size, args.face_size), args.samples)
 print('Done')

@@ -1,7 +1,9 @@
 import sys
-from PIL import Image
+import argparse
 
+from PIL import Image
 from projection import *
+
 
 def get_sample(xy, img_equi_size, face_size, img_faces):
 	angles = angles_from_img_xy(xy, img_equi_size)
@@ -40,14 +42,14 @@ def cube_to_equi(faces_img_path, equi_img_path, equi_size, samples):
 	render_equi(faces_img, equi_img, face_size, samples)
 	equi_img.save(equi_img_path)
 
-if len(sys.argv) != 5:
-	print(f'Usage: {sys.argv[0]} <src_image> <dest_image> <dest_height> <samples>')
-	sys.exit(1)
 
-cube_to_equi(
-	sys.argv[1],
-	sys.argv[2],
-	(2*int(sys.argv[3]), int(sys.argv[3])),
-	int(sys.argv[4])
-)
+parser = argparse.ArgumentParser()
+parser.add_argument('image', type=str, help='Input image file (cube map)')
+parser.add_argument('--out', type=str, default='equi.jpg', help='Output file')
+parser.add_argument('--height', type=int, default=1024, help='Height of output image, in pixels')
+parser.add_argument('--samples', type=int, default=1, help='Use NxN samples per output pixel')
+
+args = parser.parse_args()
+
+cube_to_equi(args.image, args.out, (2*args.height, args.height), args.samples)
 print('Done')
