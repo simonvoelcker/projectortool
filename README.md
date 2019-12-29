@@ -2,6 +2,8 @@
 
 Scripts to convert back end forth between panoramic pictures in different projection. Supported are equi-rectangular projection and cube maps, each given as a simple picture. The equi-rectangular pictures should ideally have 2:1 aspect ratio, the cube maps 4:3.
 
+![Example](example.jpg?raw=true "Example")
+
 ## Dependencies
 
 - Python3.7 
