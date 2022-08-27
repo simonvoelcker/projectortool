@@ -1,22 +1,25 @@
 # Projector tool
 
-Scripts to convert back end forth between panoramic pictures in different projection. Supported are equi-rectangular projection and cube maps, each given as a simple picture. The equi-rectangular pictures should ideally have 2:1 aspect ratio, the cube maps 4:3.
+Scripts to convert back end forth between panoramic pictures in different projection. Input and output are simple pictures.
+
+The supported projections are:
+- Equi-rectangular projection (ideal aspect ratio 2:1)
+- Cube map projection (ideal aspect ratio 4:3)
+- Work in progress: Hemispherical projection (ideal aspect ration 1:1)
 
 ![Example](example.jpg?raw=true "Example")
 
 ## Dependencies
 
-- Python3.7 
+- Python3.7
 - Pillow
 
 ## Usage
 
-In both scripts, the input image is the only required argument. Use --samples with care, its time-complexity grows with the square of the argument.
+`python project.py <input image> --in-projection <projection> --out-projection <projection> [--out <output image> --width <int> --height <int>]`
 
-### Equi-rectangular to cube map
+*projection* is one of "equirectangular", "cubemap", "hemisperical".
 
-`python equi2cube.py <input image> [--out <output image> --face-size <size> --samples <samples>]`
+Example:
 
-### Cube map to equi-rectangular
-
-`python cube2equi.py <input image> [--out <output image> --height <height> --samples <samples>]`
+`python project.py example_equi.jpg --in-projection equirectangular --out-projection cubemap`
