@@ -1,11 +1,11 @@
 # Projector tool
 
-Scripts to convert back end forth between panoramic pictures in different projection. Input and output are simple pictures.
+A simple script to convert back and forth between panoramic pictures in different projection.
 
 The supported projections are:
 - Equi-rectangular projection (ideal aspect ratio 2:1)
 - Cube map projection (ideal aspect ratio 4:3)
-- Work in progress: Hemispherical projection (ideal aspect ration 1:1)
+- Hemispherical projection (ideal aspect ratio 1:1)
 
 ![Example](example.jpg?raw=true "Example")
 
