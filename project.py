@@ -40,8 +40,8 @@ for y in range(args.height):
         if not input_point:
             continue
         sample = input_image.getpixel((
-            int(input_point.x * input_image.size[0]),
-            int(input_point.y * input_image.size[1])
+            int(input_point.x * (input_image.size[0]-1)),
+            int(input_point.y * (input_image.size[1]-1))
         ))
         output_image.putpixel((x, y), sample)
 
