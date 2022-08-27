@@ -20,6 +20,9 @@ parser.add_argument('--out', type=str, default='out.jpg', help='Output file')
 parser.add_argument('--out-projection', type=str, help=f'Output image projection. One of {projections.keys()}')
 parser.add_argument('--width', type=int, default=1024, help='Width of output image, in pixels')
 parser.add_argument('--height', type=int, default=1024, help='Height of output image, in pixels')
+parser.add_argument('--azimuth-offset', type=int, default=0, help='Offset to apply to azimuth, in degrees')
+parser.add_argument('--altitude-offset', type=int, default=0, help='Offset to apply to altitude, in degrees')
+
 
 args = parser.parse_args()
 
@@ -36,6 +39,7 @@ for y in range(args.height):
         if not angles:
             # Projection gaps may exist. Pixel keeps background color
             continue
+        angles.apply_offsets(args.azimuth_offset, args.altitude_offset)
         input_point = input_projection.to_point(angles)
         if not input_point:
             continue

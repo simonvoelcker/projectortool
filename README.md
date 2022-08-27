@@ -18,8 +18,18 @@ The supported projections are:
 
 `python project.py <input image> --in-projection <projection> --out-projection <projection> [--out <output image> --width <int> --height <int>]`
 
-*projection* is one of "equirectangular", "cubemap", "hemisperical".
+*projection* is one of "equirectangular", "cubemap", "hemispherical".
 
 Example:
 
 `python project.py example_equi.jpg --in-projection equirectangular --out-projection cubemap`
+
+- support az/alt offsets
+- make hemi fov configurable
+- support super sampling
+- fix off by one shit
+- beautiful readme
+- automatic detection of source projection
+- automatic output file size (retain height or width, whichever is ~lossless)
+- automatic output file name (projection suffix)
+- tests
