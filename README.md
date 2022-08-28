@@ -23,12 +23,13 @@ Produced by wide-angle (fish eye) lenses. Distortion drastically increases towar
 
 ## Usage
 
-`python project.py <input image> --in-projection <projection> --out-projection <projection> [--out <output image> --width <int> --height <int> --samples <int> --rotation <int,int,int>]`
+`python project.py <input image> --in-projection <projection> --out-projection <projection> --out <output image> --width <int> --height <int> --samples <int> --rotation <int,int,int> --hemi-fov-x <int> --hemi-fov-y <int>`
 
 - **--in-projection** can be any of **equirectangular**, **cubemap**, **hemispherical**. Can also be left blank for auto detection based on aspect ratio.
 - **--width** and **--height** control the size of the output image. If omitted, a reasonable size is picked based on input image size and output projection.
 - **--samples** can be used to specify super-sampling quality. N times N samples per pixel will be taken, so this has a serious performance penalty.
 - **--rotation** allows for a rotation of the scene along the x, y and z axes. The rotation is applied in this order and must be specified as comma-separated integers (degrees).
+- **--hemi-fov-x** and **--hemi-fov-y** can be used to specify the field of view along the x and y image axes when using hemispherical projection. If your image is not square but the scene is circular as in the example image above, the ratio of the FOVs should match the aspect ratio of the image. In the example image, the correct FOVs are x=180 and y=121.
 
 Example:
 

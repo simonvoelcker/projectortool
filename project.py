@@ -24,7 +24,8 @@ parser.add_argument('--width', type=int, help='Width of output image, in pixels'
 parser.add_argument('--height', type=int, help='Height of output image, in pixels')
 parser.add_argument('--rotation', type=str, help='Rotate by given angles (<x>,<y>,<z> in degrees)')
 parser.add_argument('--samples', type=int, default=1, help='Take NxN samples per pixel. Caution: Slow.')
-
+parser.add_argument('--hemi-fov-x', type=int, default=180, help='Horizontal field of view (in degrees) of hemispherical projection')
+parser.add_argument('--hemi-fov-y', type=int, default=180, help='Vertical field of view (in degrees) of hemispherical projection')
 
 args = parser.parse_args()
 
@@ -43,8 +44,13 @@ if in_projection == 'auto':
         print('Specify input projection using --in-projection')
         sys.exit(0)
 
-input_projection = projections[in_projection]()
-output_projection = projections[args.out_projection]()
+projection_kwargs = {
+    'hemi_fov_x': args.hemi_fov_x,
+    'hemi_fov_y': args.hemi_fov_y,
+}
+
+input_projection = projections[in_projection](**projection_kwargs)
+output_projection = projections[args.out_projection](**projection_kwargs)
 
 out_width, out_height = args.width, args.height
 if not out_width or not out_height:

@@ -3,6 +3,8 @@ from projections.utils import Point, Direction
 
 
 class Projection:
+    def __init__(self, *args, **kwargs):
+        super().__init__()
 
     @staticmethod
     def aspect_ratio() -> float:
