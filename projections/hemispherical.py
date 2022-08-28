@@ -9,6 +9,10 @@ class HemisphericalProjection(Projection):
     # Angle between left and right edge of the image, in radians
     FOV = pi
 
+    @staticmethod
+    def aspect_ratio() -> float:
+        return 1.0
+
     def to_direction(self, point: Point) -> Optional[Direction]:
         center_x, center_y = point.x - 0.5, point.y - 0.5
         center_distance = sqrt(center_x*center_x + center_y*center_y)

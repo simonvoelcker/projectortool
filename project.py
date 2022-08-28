@@ -17,10 +17,10 @@ projections = {
 parser = argparse.ArgumentParser()
 parser.add_argument('image', type=str, help='Input image file')
 parser.add_argument('--in-projection', type=str, default='auto', help=f'Input image projection. One of {projections.keys()}')
-parser.add_argument('--out', type=str, default='out.jpg', help='Output file')
+parser.add_argument('--out', type=str, default='out.jpg', help='Output file name')
 parser.add_argument('--out-projection', type=str, help=f'Output image projection. One of {projections.keys()}')
-parser.add_argument('--width', type=int, default=1024, help='Width of output image, in pixels')
-parser.add_argument('--height', type=int, default=1024, help='Height of output image, in pixels')
+parser.add_argument('--width', type=int, help='Width of output image, in pixels')
+parser.add_argument('--height', type=int, help='Height of output image, in pixels')
 parser.add_argument('--rotation', type=str, help='Rotate by given angles (<x>,<y>,<z> in degrees)')
 
 
@@ -29,27 +29,39 @@ args = parser.parse_args()
 input_image = Image.open(args.image)
 
 in_projection = args.in_projection
+in_width, in_height = input_image.size
+in_aspect_ratio = float(in_width) / float(in_height)
 if in_projection == 'auto':
     # Detect input projection based on image aspect ratio
-    width, height = input_image.size
-    if width == height:
-        in_projection = 'hemispherical'
-    elif width == 2 * height:
-        in_projection = 'equirectangular'
-    elif 4 * height == 3 * width:
-        in_projection = 'cubemap'
-    else:
+    for projection_name, projection_class in projections.items():
+        if projection_class.aspect_ratio() == in_aspect_ratio:
+            in_projection = projection_name
+    # No match found, ask the user to specify projection
+    if in_projection == 'auto':
         print('Specify input projection using --in-projection')
         sys.exit(0)
 
 input_projection = projections[in_projection]()
-output_image = Image.new('RGB', (args.width, args.height), 'black')
 output_projection = projections[args.out_projection]()
 
+out_width, out_height = args.width, args.height
+if not out_width or not out_height:
+    # Come up with reasonable output image size based on
+    # input image size and desired output projection
+    out_aspect_ratio = output_projection.aspect_ratio()
+    if not out_width:
+        out_width = in_width
+        out_height = int(out_width / out_aspect_ratio)
+    if not out_height:
+        out_height = in_height
+        out_width = int(out_height * out_aspect_ratio)
+
+output_image = Image.new('RGB', (out_width, out_height), 'black')
+
 # Render image
-for y in range(args.height):
-    for x in range(args.width):
-        output_point = Point(x/args.width, y/args.height)
+for y in range(out_height):
+    for x in range(out_width):
+        output_point = Point(x/out_width, y/out_height)
         direction = output_projection.to_direction(output_point)
         if not direction:
             # Projection gaps may exist. Pixel keeps background color

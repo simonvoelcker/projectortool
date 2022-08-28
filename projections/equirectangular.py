@@ -5,6 +5,11 @@ from projections.utils import Point, Direction, Angles
 
 
 class EquirectangularProjection(Projection):
+
+    @staticmethod
+    def aspect_ratio() -> float:
+        return 2.0
+
     def to_direction(self, point: Point) -> Optional[Direction]:
         return Angles(
             azimuth=point.x * 2.0 * pi,

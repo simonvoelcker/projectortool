@@ -24,9 +24,5 @@ Example:
 
 `python project.py example_equi.jpg --in-projection equirectangular --out-projection cubemap`
 
-- automatic output file size (retain height or width, whichever is ~lossless)
-- automatic output file name (projection suffix)
-- beautiful readme
+- beautiful readme with example pictures
 - support super sampling
-- fix off by one errors
-- tests

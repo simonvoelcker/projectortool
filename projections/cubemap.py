@@ -42,6 +42,10 @@ class CubemapProjection(Projection):
     """
 
     @staticmethod
+    def aspect_ratio() -> float:
+        return 4.0/3.0
+
+    @staticmethod
     def face_coordinates_from_point(point: Point) -> Optional[FaceCoordinates]:
         face_index_x = int(point.x * 4)
         face_offset_x = point.x * 4 - face_index_x
