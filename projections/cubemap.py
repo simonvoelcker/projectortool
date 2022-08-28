@@ -1,7 +1,7 @@
 from typing import Optional
 from dataclasses import dataclass
-from projections.base import Projection, Angles, Point
-from math import atan2, sqrt, pi, sin, cos
+from projections.base import Projection
+from projections.utils import Point, Direction, Vector
 from enum import Enum
 
 
@@ -21,13 +21,6 @@ class FaceCoordinates:
     y: float
 
 
-@dataclass
-class Direction:
-    x: float
-    y: float
-    z: float
-
-
 class CubemapProjection(Projection):
     """
     The cubemap is assumed to look like this:
@@ -44,53 +37,9 @@ class CubemapProjection(Projection):
     The ideal image will therefore have 4:3 aspect ratio,
     which is why these numbers appear in the computations below.
 
-    The projection is done via two intermediate representations
-    of directions: a direction vector and a tuple of face and
-    face-coordinates (cubemap faces).
+    The projection is done via an intermediate representation
+    of directions: A tuple of face and face-coordinates (cubemap faces).
     """
-
-    @staticmethod
-    def angles_from_direction(direction: Direction) -> Angles:
-        # catch altitude special cases
-        if direction.x == 0 and direction.z == 0:
-            if direction.y == 0:
-                # null vector case: safe fallback
-                return Angles(altitude=0, azimuth=0)
-            elif direction.y < 0:
-                # again save fallback for azimuth
-                return Angles(altitude=-pi / 2.0, azimuth=0)
-            else:
-                # again save fallback for azimuth
-                return Angles(altitude=+pi / 2.0, azimuth=0)
-
-        altitude = atan2(direction.y, sqrt(direction.x * direction.x + direction.z * direction.z))
-
-        # catch azimuth special case
-        if direction.x == 0:
-            return Angles(
-                altitude=altitude,
-                azimuth=-pi / 2.0 if direction.z < 0 else +pi / 2.0
-            )
-
-        # general case
-        azimuth = atan2(direction.z, direction.x)  # outputs [-pi;pi]
-        if azimuth < 0.0:
-            azimuth += 2.0 * pi  # map to [0;2pi]
-        angles = Angles(altitude=altitude, azimuth=azimuth)
-        return angles
-
-    @staticmethod
-    def direction_from_angles(angles: Angles) -> Direction:
-        x, y, z = 1.0, 0.0, 0.0
-        x, y = (
-            x * cos(angles.altitude) - y * sin(angles.altitude),
-            x * sin(angles.altitude) + y * cos(angles.altitude)
-        )
-        x, z = (
-            x * cos(angles.azimuth) - z * sin(angles.azimuth),
-            x * sin(angles.azimuth) + z * cos(angles.azimuth)
-        )
-        return Direction(x, y, z)
 
     @staticmethod
     def face_coordinates_from_point(point: Point) -> Optional[FaceCoordinates]:
@@ -130,27 +79,30 @@ class CubemapProjection(Projection):
     @staticmethod
     def direction_from_face_coordinates(
         face_coordinates: FaceCoordinates
-    ) -> Optional[Direction]:
+    ) -> Direction:
         u = face_coordinates.x
         v = face_coordinates.y
 
         if face_coordinates.face == Face.neg_x:
-            return Direction(-1, 2 * v - 1, -(2 * u - 1))
+            return Vector(-1, 2 * v - 1, -(2 * u - 1))
         if face_coordinates.face == Face.pos_x:
-            return Direction(+1, 2 * v - 1, 2 * u - 1)
+            return Vector(+1, 2 * v - 1, 2 * u - 1)
         if face_coordinates.face == Face.neg_y:
-            return Direction(-(2 * v - 1), -1, -(2 * u - 1))
+            return Vector(-(2 * v - 1), -1, -(2 * u - 1))
         if face_coordinates.face == Face.pos_y:
-            return Direction(2 * v - 1, +1, -(2 * u - 1))
+            return Vector(2 * v - 1, +1, -(2 * u - 1))
         if face_coordinates.face == Face.neg_z:
-            return Direction(2 * u - 1, 2 * v - 1, -1)
+            return Vector(2 * u - 1, 2 * v - 1, -1)
         if face_coordinates.face == Face.pos_z:
-            return Direction(-(2 * u - 1), 2 * v - 1, +1)
+            return Vector(-(2 * u - 1), 2 * v - 1, +1)
 
     @staticmethod
-    def face_coordinates_from_direction(direction: Direction) -> FaceCoordinates:
-        max_xyz = max(abs(direction.x), abs(direction.y), abs(direction.z))
-        x, y, z = (direction.x / max_xyz, direction.y / max_xyz, direction.z / max_xyz)
+    def face_coordinates_from_direction(
+        direction: Direction
+    ) -> FaceCoordinates:
+        vector = direction.as_vector()
+        max_xyz = max(abs(vector.x), abs(vector.y), abs(vector.z))
+        x, y, z = (vector.x / max_xyz, vector.y / max_xyz, vector.z / max_xyz)
 
         def to_uv(direction_component: float) -> float:
             return (direction_component + 1.0) / 2.0
@@ -170,16 +122,14 @@ class CubemapProjection(Projection):
 
         raise RuntimeError('Bad direction vector')
 
-    def to_angles(self, point: Point) -> Optional[Angles]:
+    def to_direction(self, point: Point) -> Optional[Direction]:
         face_coordinates = self.face_coordinates_from_point(point)
         if not face_coordinates:
             return None
         direction = self.direction_from_face_coordinates(face_coordinates)
-        angles = self.angles_from_direction(direction)
-        return angles
+        return direction
 
-    def to_point(self, angles: Angles) -> Optional[Point]:
-        direction = self.direction_from_angles(angles)
+    def to_point(self, direction: Direction) -> Optional[Point]:
         face_coordinates = self.face_coordinates_from_direction(direction)
         point = self.point_from_face_coordinates(face_coordinates)
         return point

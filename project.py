@@ -20,8 +20,7 @@ parser.add_argument('--out', type=str, default='out.jpg', help='Output file')
 parser.add_argument('--out-projection', type=str, help=f'Output image projection. One of {projections.keys()}')
 parser.add_argument('--width', type=int, default=1024, help='Width of output image, in pixels')
 parser.add_argument('--height', type=int, default=1024, help='Height of output image, in pixels')
-parser.add_argument('--azimuth-offset', type=int, default=0, help='Offset to apply to azimuth, in degrees')
-parser.add_argument('--altitude-offset', type=int, default=0, help='Offset to apply to altitude, in degrees')
+parser.add_argument('--rotation', type=str, help='Rotate by given Euler angles (<x>,<y>,<z> in degrees)')
 
 
 args = parser.parse_args()
@@ -35,12 +34,14 @@ output_projection = projections[args.out_projection]()
 for y in range(args.height):
     for x in range(args.width):
         output_point = Point(x/args.width, y/args.height)
-        angles = output_projection.to_angles(output_point)
-        if not angles:
+        direction = output_projection.to_direction(output_point)
+        if not direction:
             # Projection gaps may exist. Pixel keeps background color
             continue
-        angles.apply_offsets(args.azimuth_offset, args.altitude_offset)
-        input_point = input_projection.to_point(angles)
+        if args.rotation:
+            x, y, z = args.rotation.split(',')
+            direction.rotate(angle_x=int(x), angle_y=int(y), angle_z=int(z))
+        input_point = input_projection.to_point(direction)
         if not input_point:
             continue
         sample = input_image.getpixel((

@@ -1,6 +1,7 @@
 from typing import Optional
 from math import atan2, pi, sqrt, sin, cos
-from projections.base import Projection, Angles, Point
+from projections.base import Projection
+from projections.utils import Direction, Angles, Point
 
 
 class HemisphericalProjection(Projection):
@@ -8,7 +9,7 @@ class HemisphericalProjection(Projection):
     # Angle between left and right edge of the image, in radians
     FOV = pi
 
-    def to_angles(self, point: Point) -> Optional[Angles]:
+    def to_direction(self, point: Point) -> Optional[Direction]:
         center_x, center_y = point.x - 0.5, point.y - 0.5
         center_distance = sqrt(center_x*center_x + center_y*center_y)
         center_distance_angle = center_distance * self.FOV
@@ -27,7 +28,8 @@ class HemisphericalProjection(Projection):
 
         return Angles(altitude=altitude, azimuth=azimuth)
 
-    def to_point(self, angles: Angles) -> Optional[Point]:
+    def to_point(self, direction: Direction) -> Optional[Point]:
+        angles = direction.as_angles()
         center_distance_angle = pi / 2.0 - angles.altitude
         center_distance = center_distance_angle / self.FOV
 
