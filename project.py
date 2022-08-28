@@ -1,3 +1,4 @@
+import sys
 import argparse
 
 from PIL import Image
@@ -15,7 +16,7 @@ projections = {
 
 parser = argparse.ArgumentParser()
 parser.add_argument('image', type=str, help='Input image file')
-parser.add_argument('--in-projection', type=str, help=f'Input image projection. One of {projections.keys()}')
+parser.add_argument('--in-projection', type=str, default='auto', help=f'Input image projection. One of {projections.keys()}')
 parser.add_argument('--out', type=str, default='out.jpg', help='Output file')
 parser.add_argument('--out-projection', type=str, help=f'Output image projection. One of {projections.keys()}')
 parser.add_argument('--width', type=int, default=1024, help='Width of output image, in pixels')
@@ -26,7 +27,22 @@ parser.add_argument('--rotation', type=str, help='Rotate by given angles (<x>,<y
 args = parser.parse_args()
 
 input_image = Image.open(args.image)
-input_projection = projections[args.in_projection]()
+
+in_projection = args.in_projection
+if in_projection == 'auto':
+    # Detect input projection based on image aspect ratio
+    width, height = input_image.size
+    if width == height:
+        in_projection = 'hemispherical'
+    elif width == 2 * height:
+        in_projection = 'equirectangular'
+    elif 4 * height == 3 * width:
+        in_projection = 'cubemap'
+    else:
+        print('Specify input projection using --in-projection')
+        sys.exit(0)
+
+input_projection = projections[in_projection]()
 output_image = Image.new('RGB', (args.width, args.height), 'black')
 output_projection = projections[args.out_projection]()
 

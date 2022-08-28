@@ -24,11 +24,9 @@ Example:
 
 `python project.py example_equi.jpg --in-projection equirectangular --out-projection cubemap`
 
-- make hemi fov configurable
-- support super sampling
-- fix off by one shit
-- beautiful readme
-- automatic detection of source projection
 - automatic output file size (retain height or width, whichever is ~lossless)
 - automatic output file name (projection suffix)
+- beautiful readme
+- support super sampling
+- fix off by one errors
 - tests
