@@ -25,4 +25,3 @@ Example:
 `python project.py example_equi.jpg --in-projection equirectangular --out-projection cubemap`
 
 - beautiful readme with example pictures
-- support super sampling
