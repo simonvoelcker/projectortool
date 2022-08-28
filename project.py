@@ -20,7 +20,7 @@ parser.add_argument('--out', type=str, default='out.jpg', help='Output file')
 parser.add_argument('--out-projection', type=str, help=f'Output image projection. One of {projections.keys()}')
 parser.add_argument('--width', type=int, default=1024, help='Width of output image, in pixels')
 parser.add_argument('--height', type=int, default=1024, help='Height of output image, in pixels')
-parser.add_argument('--rotation', type=str, help='Rotate by given Euler angles (<x>,<y>,<z> in degrees)')
+parser.add_argument('--rotation', type=str, help='Rotate by given angles (<x>,<y>,<z> in degrees)')
 
 
 args = parser.parse_args()
@@ -39,8 +39,8 @@ for y in range(args.height):
             # Projection gaps may exist. Pixel keeps background color
             continue
         if args.rotation:
-            x, y, z = args.rotation.split(',')
-            direction.rotate(angle_x=int(x), angle_y=int(y), angle_z=int(z))
+            angle_x, angle_y, angle_z = args.rotation.split(',')
+            direction.rotate(int(angle_x), int(angle_y), int(angle_z))
         input_point = input_projection.to_point(direction)
         if not input_point:
             continue

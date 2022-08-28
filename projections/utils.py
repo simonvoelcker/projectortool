@@ -60,8 +60,27 @@ class Vector(Direction):
         return angles
 
     def rotate(self, angle_x: int, angle_y: int, angle_z: int) -> "Direction":
-        # TODO
-        raise NotImplementedError
+
+        angle_x = float(angle_x) / 180.0 * pi
+        angle_y = float(angle_y) / 180.0 * pi
+        angle_z = float(angle_z) / 180.0 * pi
+
+        sin_x, cos_x = sin(angle_x), cos(angle_x)
+        y_dash = self.y * cos_x - self.z * sin_x
+        z_dash = self.y * sin_x + self.z * cos_x
+        self.y, self.z = y_dash, z_dash
+
+        sin_y, cos_y = sin(angle_y), cos(angle_y)
+        x_dash = self.x * cos_y - self.z * sin_y
+        z_dash = self.x * sin_y + self.z * cos_y
+        self.x, self.z = x_dash, z_dash
+
+        sin_z, cos_z = sin(angle_z), cos(angle_z)
+        x_dash = self.x * cos_z - self.y * sin_z
+        y_dash = self.x * sin_z + self.y * cos_z
+        self.x, self.y = x_dash, y_dash
+
+        return self
 
 
 class Angles(Direction):

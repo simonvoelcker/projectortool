@@ -24,7 +24,6 @@ Example:
 
 `python project.py example_equi.jpg --in-projection equirectangular --out-projection cubemap`
 
-- support az/alt offsets
 - make hemi fov configurable
 - support super sampling
 - fix off by one shit
