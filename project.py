@@ -1,6 +1,6 @@
 import sys
 import argparse
-from typing import Optional, Tuple
+from typing import Tuple
 
 from PIL import Image
 from projections.base import Point
@@ -69,7 +69,7 @@ def sample_input_image(point: Point) -> Tuple[int, int, int]:
         return 0, 0, 0
     if args.rotation:
         angle_x, angle_y, angle_z = args.rotation.split(',')
-        direction.rotate(int(angle_x), int(angle_y), int(angle_z))
+        direction = direction.rotated(int(angle_x), int(angle_y), int(angle_z))
     input_point = input_projection.to_point(direction)
     if not input_point:
         return 0, 0, 0

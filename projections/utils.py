@@ -16,8 +16,8 @@ class Direction:
     def as_angles(self) -> "Angles":
         raise NotImplementedError
 
-    def rotate(self, angle_x: int, angle_y: int, angle_z: int) -> "Direction":
-        return self.as_vector().rotate(angle_x, angle_y, angle_z)
+    def rotated(self, angle_x: int, angle_y: int, angle_z: int) -> "Direction":
+        return self.as_vector().rotated(angle_x, angle_y, angle_z)
 
 
 class Vector(Direction):
@@ -59,7 +59,7 @@ class Vector(Direction):
         angles = Angles(altitude=altitude, azimuth=azimuth)
         return angles
 
-    def rotate(self, angle_x: int, angle_y: int, angle_z: int) -> "Direction":
+    def rotated(self, angle_x: int, angle_y: int, angle_z: int) -> "Direction":
 
         angle_x = float(angle_x) / 180.0 * pi
         angle_y = float(angle_y) / 180.0 * pi
