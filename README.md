@@ -20,6 +20,7 @@ Produced by wide-angle (fish eye) lenses. Distortion drastically increases towar
 
 - Python 3.7 or greater. f-strings and type hints are used.
 - Pillow
+- Numpy
 
 ## Usage
 
@@ -34,3 +35,7 @@ Produced by wide-angle (fish eye) lenses. Distortion drastically increases towar
 Example:
 
 `python project.py example_equi.jpg --in-projection equirectangular --out-projection cubemap --out cube.png --width 1536 --height 1024 --samples 2 --rotation 180,90,0`
+
+## Bulk processing
+
+To process a large number of images with the same parameters, use the `project_many.py` script. It generates a lookup table for the projection parameters and given image resolution, which can be applied quickly to many images. Instead of an image file path, it accepts a path to a text file which in turn should contain image file paths. Specify the output directory using `--out-dir`. The `--samples` parameter is not supported in this case.
