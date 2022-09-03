@@ -1,5 +1,4 @@
 import argparse
-import numpy as np
 from settings import Settings
 from sampler import Sampler
 
@@ -19,60 +18,16 @@ parser.add_argument('--samples', type=int, default=1, help='Take NxN samples per
 parser.add_argument('--hemi-fov-x', type=int, default=180, help='Horizontal field of view (in degrees) of hemispherical projection')
 parser.add_argument('--hemi-fov-y', type=int, default=180, help='Vertical field of view (in degrees) of hemispherical projection')
 
-parser.add_argument('--bulk', action='store_true')
-
 args = parser.parse_args()
+input_image = Image.open(args.image)
+settings = Settings(args, input_image)
+sampler = Sampler(args, settings, lambda in_x, in_y: input_image.getpixel((in_x, in_y)))
+output_image = Image.new('RGB', (settings.out_width, settings.out_height), 'black')
 
-if args.bulk:
-    input_image = Image.open(args.image)
-    settings = Settings(args, input_image)
+# Render image
+for out_y in range(settings.out_height):
+    for out_x in range(settings.out_width):
+        sample = sampler.get_supersample(out_x, out_y, args.samples)
+        output_image.putpixel((out_x, out_y), sample)
 
-    sample_recording = np.zeros((
-        settings.out_width,
-        settings.out_height,
-        2,
-    ), dtype=np.int16)
-
-    def record_sample(in_x, in_y):
-        sample_recording[out_x, out_y, :] = [in_x, in_y]
-        return 0, 0, 0
-
-    recording_sampler = Sampler(args, settings, record_sample)
-
-    # Run recording
-    for out_y in range(settings.out_height):
-        for out_x in range(settings.out_width):
-            recording_sampler.get_supersample(out_x, out_y)
-
-    # Render output image, looking up the coordinates from the recording
-    input_image_buffer = np.asarray(input_image)
-    input_image_buffer = np.swapaxes(input_image_buffer, 0, 1)
-
-    output_image_buffer = np.zeros((
-        settings.out_width,
-        settings.out_height,
-        3
-    ), dtype=np.uint8)
-
-    for out_y in range(settings.out_height):
-        for out_x in range(settings.out_width):
-            in_x, in_y = sample_recording[out_x, out_y, :]
-            sample = input_image_buffer[in_x, in_y, :]
-            output_image_buffer[out_x, out_y, :] = sample
-
-    output_image_buffer = np.swapaxes(output_image_buffer, 0, 1)
-    output_image = Image.fromarray(output_image_buffer)
-    output_image.save(args.out)
-else:
-    input_image = Image.open(args.image)
-    settings = Settings(args, input_image)
-    sampler = Sampler(args, settings, lambda in_x, in_y: input_image.getpixel((in_x, in_y)))
-    output_image = Image.new('RGB', (settings.out_width, settings.out_height), 'black')
-
-    # Render image
-    for out_y in range(settings.out_height):
-        for out_x in range(settings.out_width):
-            sample = sampler.get_supersample(out_x, out_y)
-            output_image.putpixel((out_x, out_y), sample)
-
-    output_image.save(args.out)
+output_image.save(args.out, quality=90)

@@ -9,7 +9,6 @@ class Sampler:
         self.cli_args = cli_args
         self.settings = settings
         self.sampling_callback = sampling_callback
-        self.total_samples = cli_args.samples * cli_args.samples
 
         if self.cli_args.rotation:
             angle_x, angle_y, angle_z = self.cli_args.rotation.split(',')
@@ -35,8 +34,8 @@ class Sampler:
             in_y=int(input_point.y * (self.settings.in_height - 1)),
         )
 
-    def get_supersample(self, out_x: int, out_y: int) -> Tuple[int, int, int]:
-        if self.total_samples == 1:
+    def get_supersample(self, out_x: int, out_y: int, samples: int = 1) -> Tuple[int, int, int]:
+        if samples == 1:
             # One sample per pixel
             output_point = Point(
                 out_x / self.settings.out_width,
@@ -57,7 +56,7 @@ class Sampler:
                     g += sample[1]
                     b += sample[2]
             return (
-                r // self.total_samples,
-                g // self.total_samples,
-                b // self.total_samples
+                r // samples * samples,
+                g // samples * samples,
+                b // samples * samples
             )
