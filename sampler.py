@@ -31,8 +31,8 @@ class Sampler:
             return 0, 0, 0
 
         return self.sampling_callback(
-            int(input_point.x * (self.settings.in_width - 1)),
-            int(input_point.y * (self.settings.in_height - 1))
+            in_x=int(input_point.x * (self.settings.in_width - 1)),
+            in_y=int(input_point.y * (self.settings.in_height - 1)),
         )
 
     def get_supersample(self, out_x: int, out_y: int) -> Tuple[int, int, int]:
