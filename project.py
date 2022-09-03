@@ -45,17 +45,23 @@ if args.bulk:
             recording_sampler.get_supersample(out_x, out_y)
 
     # Render output image, looking up the coordinates from the recording
-    output_image = Image.new('RGB', (settings.out_width, settings.out_height), 'black')
+    input_image_buffer = np.asarray(input_image)
+    input_image_buffer = np.swapaxes(input_image_buffer, 0, 1)
 
-    # read: numpy.asarray(PIL.Image.open('test.jpg'))
-    # write: im = PIL.Image.fromarray(numpy.uint8(I))
-    
+    output_image_buffer = np.zeros((
+        settings.out_width,
+        settings.out_height,
+        3
+    ), dtype=np.uint8)
+
     for out_y in range(settings.out_height):
         for out_x in range(settings.out_width):
             in_x, in_y = sample_recording[out_x, out_y, :]
-            sample = input_image.getpixel((int(in_x), int(in_y)))
-            output_image.putpixel((out_x, out_y), sample)
+            sample = input_image_buffer[in_x, in_y, :]
+            output_image_buffer[out_x, out_y, :] = sample
 
+    output_image_buffer = np.swapaxes(output_image_buffer, 0, 1)
+    output_image = Image.fromarray(output_image_buffer)
     output_image.save(args.out)
 else:
     input_image = Image.open(args.image)
