@@ -19,7 +19,7 @@ parser.add_argument('--hemi-fov-x', type=int, default=180, help='Horizontal fiel
 parser.add_argument('--hemi-fov-y', type=int, default=180, help='Vertical field of view (in degrees) of hemispherical projection')
 
 args = parser.parse_args()
-input_image = Image.open(args.image)
+input_image = Image.open(args.image).convert('RGB')
 settings = Settings(args, input_image)
 sampler = Sampler(args, settings, lambda in_x, in_y: input_image.getpixel((in_x, in_y)))
 output_image = Image.new('RGB', (settings.out_width, settings.out_height), 'black')
